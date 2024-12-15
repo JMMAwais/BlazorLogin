@@ -1,0 +1,49 @@
+﻿
+@page "/login"
+@using BlazorLogin.Data.Context
+@using BlazorLogin.Data.Context.Model
+@inject Service service
+@inject NavigationManager manager
+@inject StateProvider provider
+
+<h3>LoggedIn</h3>
+<EditForm Model="logint">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="logint.Email" />    
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="logint.Password" />
+    </div>
+
+
+    <button class="btn btn-primary" @onclick="Send" type="submit">Login</button>
+</EditForm>
+
+@code {
+    public Logint logint = new Logint();
+
+    private async Task Send()
+    {
+        var a = await service.Login(logint);
+        
+           
+
+
+        if (a == "Login successful!")
+        {
+            // Create a session for the user
+            var userSession = new UserSession
+                {
+                    UserName = logint.Email,
+                };
+
+            // Save the session via StateProvider
+            await provider.Login(userSession);
+
+            // Navigate to the home page
+            manager.NavigateTo("/counter");
+        }
+    }
+}
